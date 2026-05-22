@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Project Dashboard
+{% endblock %}
+
+{% block body %}
+	<div class="dashboard-wrapper">
+		<div class="dashboard-card">
+
+			<h1>🎉 Project Successfully Deployed 🎉</h1>
+			<h2>Symfony Platform Technology Project</h2>
+
+			<p class="lead">
+				Your application is now running successfully on the hosting environment.
+			</p>
+
+			<div class="badge badge-header">
+				✅ Application Running
+			</div>
+
+			<div class="badge">
+				{% if db_working %}
+					✅ Database connection is working
+				{% else %}
+					❌ Database connection failed
+				{% endif %}
+			</div>
+
+			<p class="footer-text">
+				Platform Technology Dashboard<br>
+				Deployment Successful 🚀
+			</p>
+
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,145 @@
+<style>
+	.styled-form {
+		width: 100%;
+	}
+
+	.styled-form form {
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
+	}
+
+	.styled-form .form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.styled-form label {
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: #334155;
+		letter-spacing: 0.01em;
+	}
+
+	.styled-form input,
+	.styled-form textarea,
+	.styled-form select {
+		width: 100%;
+		padding: 14px 16px;
+		border: 1px solid #dbe2ea;
+		border-radius: 14px;
+		background: #ffffff;
+		font-size: 0.96rem;
+		color: #0f172a;
+		transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+		box-sizing: border-box;
+	}
+
+	.styled-form input::placeholder,
+	.styled-form textarea::placeholder {
+		color: #94a3b8;
+	}
+
+	.styled-form input:focus,
+	.styled-form textarea:focus,
+	.styled-form select:focus {
+		outline: none;
+		border-color: #6366f1;
+		background: #fff;
+		box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+	}
+
+	.styled-form textarea {
+		min-height: 120px;
+		resize: vertical;
+		line-height: 1.5;
+	}
+
+	.styled-form .form-error,
+	.styled-form .invalid-feedback,
+	.styled-form .form-errors {
+		color: #dc2626;
+		font-size: 0.85rem;
+		margin-top: 4px;
+	}
+
+	.styled-form .btn-wrapper {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 10px;
+	}
+
+	.styled-form .btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+
+		padding: 14px 24px;
+		border: none;
+		border-radius: 14px;
+
+		background: #4f46e5;
+		color: #fff;
+
+		font-size: 0.95rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+
+		cursor: pointer;
+
+		transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+
+		box-shadow: 0 6px 18px rgba(79, 70, 229, 0.18);
+	}
+
+	.styled-form .btn:hover {
+		background: #4338ca;
+		transform: translateY(-1px);
+		box-shadow: 0 10px 24px rgba(79, 70, 229, 0.22);
+	}
+
+	.styled-form .btn:active {
+		transform: scale(0.98);
+	}
+
+	.styled-form .btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	/* Symfony Form Rows */
+	.styled-form div > label + input,
+	.styled-form div > label + textarea,
+	.styled-form div > label + select {
+		margin-top: 6px;
+	}
+
+	/* Mobile */
+	@media(max-width: 768px) {
+		.styled-form .btn-wrapper {
+			justify-content: stretch;
+		}
+
+		.styled-form .btn {
+			width: 100%;
+		}
+	}
+</style>
+
+<div class="styled-form">
+
+	{{ form_start(form) }}
+
+	{{ form_widget(form) }}
+
+	<div class="btn-wrapper">
+		<button class="btn" type="submit">
+			{{ button_label|default('Save Product') }}
+		</button>
+	</div>
+
+	{{ form_end(form) }}
+
+</div>

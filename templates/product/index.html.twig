@@ -1,0 +1,239 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Products
+{% endblock %}
+
+{% block body %}
+	<style>
+		body {
+			background: #f4f7fb;
+			min-height: 100vh;
+			font-family: Inter, sans-serif;
+		}
+
+		.products-container {
+			max-width: 1200px;
+			margin: 40px auto;
+			padding: 0 20px;
+		}
+
+		.products-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 24px;
+		}
+
+		.products-title {
+			font-size: 2rem;
+			font-weight: 700;
+			color: #1e293b;
+		}
+
+		.products-add-btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 10px;
+			padding: 12px 20px;
+			border-radius: 12px;
+			background: #4f46e5;
+			color: white;
+			text-decoration: none;
+			font-weight: 600;
+			transition: 0.2s ease;
+			box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+		}
+
+		.products-add-btn:hover {
+			background: #4338ca;
+			transform: translateY(-2px);
+		}
+
+		.products-table-wrapper {
+			background: white;
+			border-radius: 18px;
+			overflow: hidden;
+			box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+		}
+
+		.products-table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		.products-table thead {
+			background: #f8fafc;
+		}
+
+		.products-table th {
+			padding: 18px;
+			text-align: left;
+			font-size: 0.9rem;
+			font-weight: 600;
+			color: #64748b;
+			border-bottom: 1px solid #e2e8f0;
+		}
+
+		.products-table td {
+			padding: 18px;
+			border-bottom: 1px solid #f1f5f9;
+			vertical-align: middle;
+			color: #334155;
+		}
+
+		.products-table tbody tr {
+			transition: background 0.2s ease;
+		}
+
+		.products-table tbody tr:hover {
+			background: #f8fafc;
+		}
+
+		.product-name {
+			font-weight: 600;
+			color: #0f172a;
+		}
+
+		.product-description {
+			max-width: 400px;
+			color: #64748b;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.product-price {
+			font-weight: 700;
+			color: #059669;
+		}
+
+		.product-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: 10px;
+		}
+
+		.action-btn {
+			padding: 8px 14px;
+			border-radius: 10px;
+			text-decoration: none;
+			font-size: 0.85rem;
+			font-weight: 600;
+			transition: 0.2s ease;
+		}
+
+		.view-btn {
+			background: #dbeafe;
+			color: #2563eb;
+		}
+
+		.view-btn:hover {
+			background: #bfdbfe;
+		}
+
+		.edit-btn {
+			background: #f1f5f9;
+			color: #475569;
+		}
+
+		.edit-btn:hover {
+			background: #e2e8f0;
+		}
+
+		.empty-state {
+			text-align: center;
+			padding: 40px;
+			color: #94a3b8;
+		}
+
+		@media(max-width: 768px) {
+			.products-header {
+				flex-direction: column;
+				gap: 16px;
+				align-items: flex-start;
+			}
+
+			.products-table {
+				display: block;
+				overflow-x: auto;
+			}
+		}
+	</style>
+
+	<div class="products-container">
+
+		<div class="products-header">
+			<h1 class="products-title">Products</h1>
+
+			<a href="{{ path('app_product_new') }}" class="products-add-btn">
+				<span>➕</span>
+				<span>Create Product</span>
+			</a>
+		</div>
+
+		<div class="products-table-wrapper">
+			<table class="products-table">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Name</th>
+						<th>Price</th>
+						<th>Description</th>
+						<th style="text-align:right;">Actions</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					{% for product in products %}
+						<tr>
+							<td>{{ product.id }}</td>
+
+							<td>
+								<div class="product-name">
+									{{ product.name }}
+								</div>
+							</td>
+
+
+							<td>
+								<span class="product-price">
+									₱{{ product.price|number_format(2, '.', ',') }}
+								</span>
+							</td>
+
+							<td>
+								<div class="product-description">
+									{{ product.description }}
+								</div>
+							</td>
+
+							<td>
+								<div class="product-actions">
+
+									<a href="{{ path('app_product_show', {'id': product.id}) }}" class="action-btn view-btn">
+										👁 View
+									</a>
+
+									<a href="{{ path('app_product_edit', {'id': product.id}) }}" class="action-btn edit-btn">
+										✏ Edit
+									</a>
+
+								</div>
+							</td>
+						</tr>
+
+					{% else %}
+						<tr>
+							<td colspan="5">
+								<div class="empty-state">
+									No products found.
+								</div>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+
+	</div>
+{% endblock %}
