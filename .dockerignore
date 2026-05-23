@@ -1,0 +1,21 @@
+# VCS
+.git
+.gitignore
+
+# Dependencies
+vendor/
+node_modules/
+
+# Symfony cache/logs
+var/cache/
+var/log/
+
+# OS / Editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Symfony dev files
+public/uploads/
+
