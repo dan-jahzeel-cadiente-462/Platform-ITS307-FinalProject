@@ -2,6 +2,8 @@
 
 FROM php:8.2-fpm-alpine AS base
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Install system deps for common Symfony + Doctrine usage
 RUN apk add --no-cache \
     bash \
