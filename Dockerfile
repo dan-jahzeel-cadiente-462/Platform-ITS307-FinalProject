@@ -24,6 +24,10 @@ RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoload
 # Copy app source
 COPY . .
 
+# Regenerate autoloader so symfony/runtime plugin fires post-autoload-dump
+# and produces vendor/autoload_runtime.php (skipped by --no-scripts above)
+RUN composer dump-autoload --no-dev --optimize --no-interaction
+
 # Run composer scripts now that app code is present
 RUN composer run-script post-install-cmd || true
 
