@@ -33,6 +33,11 @@ RUN composer dump-autoload --no-dev --optimize --no-interaction
 # Run composer scripts now that app code is present
 RUN composer run-script post-install-cmd || true
 
+# Copy Nginx and supervisor configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx-main.conf /etc/nginx/conf.d/nginx-main.conf
+COPY supervisord.conf /etc/supervisord.conf
+
 # Ensure entrypoint is executable
 RUN chmod +x /var/www/entrypoint.sh
 
@@ -47,7 +52,10 @@ ENV APP_ENV=prod \
 RUN php bin/console cache:clear --no-interaction --env=prod || true \
     && php bin/console cache:warmup --no-interaction --env=prod || true
 
-# Default command uses php-fpm; nginx is run separately via docker-compose
+EXPOSE 80
+
+# Entrypoint runs migrations + cache warmup, then hands off to supervisord
+# which starts both PHP-FPM and Nginx inside the single container.
 ENTRYPOINT ["/var/www/entrypoint.sh"]
-CMD ["php-fpm", "-F"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
 
