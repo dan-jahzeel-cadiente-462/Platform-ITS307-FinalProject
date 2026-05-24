@@ -15,8 +15,28 @@ chmod -R 775 var
 # Wait for database to be ready (max 60 seconds)
 if [ "${RUN_MIGRATIONS:-1}" = "1" ]; then
   echo "[entrypoint] Waiting for database to be ready..."
-  DB_HOST="${MYSQL_HOST:-db}"
-  DB_PORT="${MYSQL_PORT:-3306}"
+
+  # Extract host and port from DATABASE_URL (mysql://user:pass@host:port/db?opts)
+  # Fall back to MYSQL_HOST / MYSQL_PORT, then hardcoded defaults.
+  if [ -n "${DATABASE_URL:-}" ]; then
+    # Strip scheme and credentials: everything after the last '@'
+    _DB_HOSTPORT="${DATABASE_URL##*@}"
+    # Strip trailing path and query string
+    _DB_HOSTPORT="${_DB_HOSTPORT%%/*}"
+    # Extract host (before the colon, if present)
+    DB_HOST="${_DB_HOSTPORT%%:*}"
+    # Extract port (after the colon); fall back to 3306 if no colon found
+    if echo "$_DB_HOSTPORT" | grep -q ':'; then
+      DB_PORT="${_DB_HOSTPORT##*:}"
+    else
+      DB_PORT="${MYSQL_PORT:-3306}"
+    fi
+    echo "[entrypoint] Parsed DB_HOST=${DB_HOST} DB_PORT=${DB_PORT} from DATABASE_URL"
+  else
+    DB_HOST="${MYSQL_HOST:-db}"
+    DB_PORT="${MYSQL_PORT:-3306}"
+    echo "[entrypoint] DATABASE_URL not set, using DB_HOST=${DB_HOST} DB_PORT=${DB_PORT}"
+  fi
   DB_READY=0
   MAX_ATTEMPTS=60
   ATTEMPT=0
