@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:1
 
-FROM php:8.2-fpm-alpine AS base
+FROM php:8.3-fpm-alpine AS base
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Install system deps for common Symfony + Doctrine usage
 RUN apk add --no-cache \
@@ -23,6 +25,10 @@ RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoload
 
 # Copy app source
 COPY . .
+
+# Regenerate autoloader so symfony/runtime plugin fires post-autoload-dump
+# and produces vendor/autoload_runtime.php (skipped by --no-scripts above)
+RUN composer dump-autoload --no-dev --optimize --no-interaction
 
 # Run composer scripts now that app code is present
 RUN composer run-script post-install-cmd || true
