@@ -89,6 +89,13 @@ echo "[entrypoint] Nginx will listen on 0.0.0.0:80"
 echo "[entrypoint] PHP-FPM will listen on 127.0.0.1:9000"
 echo "[entrypoint] =================================================="
 
+# Diagnostic: show listening ports and process list to help Railway routing debug
+echo "[entrypoint] Runtime diagnostics: listing listening TCP ports"
+# Try multiple commands depending on image availability
+( ss -ltnp 2>/dev/null || netstat -tlnp 2>/dev/null || lsof -i -P -n 2>/dev/null ) || true
+echo "[entrypoint] Process list (nginx, php, supervisord):"
+ps aux | egrep "nginx|php-fpm|supervisord" || true
+
 # Start supervisord (or fallback to direct execution if supervisord not available)
 exec "$@"
 
