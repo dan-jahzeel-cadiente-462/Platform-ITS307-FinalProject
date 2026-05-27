@@ -52,7 +52,8 @@ COPY nginx-supervisord.conf /etc/nginx/nginx.conf
 
 # Build-time cache warmup (production)
 ENV APP_ENV=prod \
-    APP_DEBUG=0
+    APP_DEBUG=0 \
+    PORT=80
 
 RUN php bin/console cache:clear --no-interaction --env=prod || true \
     && php bin/console cache:warmup --no-interaction --env=prod || true
