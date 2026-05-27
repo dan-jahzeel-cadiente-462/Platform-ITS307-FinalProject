@@ -43,9 +43,10 @@ RUN mkdir -p var/cache var/log \
 # Create nginx log directory and set permissions
 RUN mkdir -p /var/log/nginx && chown -R nginx:nginx /var/log/nginx
 
-# Copy supervisor and nginx configurations
+# Copy supervisor, nginx, and php-fpm configurations
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY nginx-supervisord.conf /etc/nginx/nginx.conf
+COPY php-fpm.conf /usr/local/etc/php-fpm.d/php-fpm.conf
 
 # Build-time cache warmup (production)
 ENV APP_ENV=prod \
