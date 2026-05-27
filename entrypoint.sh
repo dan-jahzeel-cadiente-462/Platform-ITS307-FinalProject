@@ -77,6 +77,15 @@ fi
 echo "[entrypoint] Warming Symfony cache..."
 php bin/console cache:warmup --no-interaction || true
 
-# Start PHP-FPM (default CMD)
+# Ensure proper permissions for nginx to read application code
+chown -R nginx:nginx /var/www
+find /var/www -type d -exec chmod 755 {} \;
+find /var/www -type f -exec chmod 644 {} \;
+chmod 755 /var/www/bin/console
+
+echo "[entrypoint] ✅ Application ready!"
+echo "[entrypoint] Starting supervisord to manage nginx and php-fpm..."
+
+# Start supervisord (or fallback to direct execution if supervisord not available)
 exec "$@"
 

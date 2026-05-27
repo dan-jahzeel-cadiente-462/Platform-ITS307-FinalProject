@@ -10,12 +10,16 @@ services:
       APP_DEBUG: ${APP_DEBUG:-0}
       DATABASE_URL: ${DATABASE_URL}
       RUN_MIGRATIONS: ${RUN_MIGRATIONS:-1}
+      # Override command to use php-fpm for local docker-compose
+      PHP_MODE: php-fpm
     volumes:
       - ./var:/var/www/var
     depends_on:
       - db
     networks:
       - appnet
+    entrypoint: /var/www/entrypoint.sh
+    command: ["php-fpm", "-F"]
 
   web:
     image: nginx:1.27-alpine
@@ -23,6 +27,7 @@ services:
     ports:
       - "8080:80"
     volumes:
+      - .:/var/www:ro
       - ./public:/var/www/public:ro
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx-main.conf:/etc/nginx/conf.d/nginx-main.conf:ro

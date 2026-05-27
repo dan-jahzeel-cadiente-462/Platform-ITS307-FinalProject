@@ -40,6 +40,13 @@ RUN chmod +x /var/www/entrypoint.sh
 RUN mkdir -p var/cache var/log \
     && chown -R www-data:www-data var
 
+# Create nginx log directory and set permissions
+RUN mkdir -p /var/log/nginx && chown -R nginx:nginx /var/log/nginx
+
+# Copy supervisor and nginx configurations
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY nginx-supervisord.conf /etc/nginx/nginx.conf
+
 # Build-time cache warmup (production)
 ENV APP_ENV=prod \
     APP_DEBUG=0
@@ -47,7 +54,9 @@ ENV APP_ENV=prod \
 RUN php bin/console cache:clear --no-interaction --env=prod || true \
     && php bin/console cache:warmup --no-interaction --env=prod || true
 
-# Default command uses php-fpm; nginx is run separately via docker-compose
+# Run supervisord to manage both nginx and php-fpm processes
+EXPOSE 80
+
 ENTRYPOINT ["/var/www/entrypoint.sh"]
-CMD ["php-fpm", "-F"]
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
