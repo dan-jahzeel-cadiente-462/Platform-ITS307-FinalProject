@@ -89,6 +89,12 @@ echo "[entrypoint] Nginx will listen on 0.0.0.0:80"
 echo "[entrypoint] PHP-FPM will listen on 127.0.0.1:9000"
 echo "[entrypoint] =================================================="
 
+# Render nginx config from template so it binds to $PORT (Railway sets PORT)
+if [ -f /etc/nginx/nginx.conf.template ]; then
+  echo "[entrypoint] Rendering /etc/nginx/nginx.conf from template (PORT=${PORT:-80})"
+  envsubst '$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf || true
+fi
+
 # Diagnostic: show listening ports and process list to help Railway routing debug
 echo "[entrypoint] Runtime diagnostics: listing listening TCP ports"
 # Try multiple commands depending on image availability

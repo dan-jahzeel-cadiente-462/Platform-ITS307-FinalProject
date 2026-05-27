@@ -11,6 +11,7 @@ RUN apk add --no-cache \
     mysql-client \
     nginx \
     supervisor \
+    gettext \
     && docker-php-ext-install pdo pdo_mysql opcache
 
 # Install Composer
@@ -46,9 +47,9 @@ RUN mkdir -p /var/log/nginx && chown -R nginx:nginx /var/log/nginx
 # Modify PHP-FPM default config to listen on TCP port 9000
 RUN sed -i 's/^listen = .*/listen = 127.0.0.1:9000/' /usr/local/etc/php-fpm.d/www.conf
 
-# Copy supervisor and nginx configurations
+# Copy supervisor config and nginx template
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY nginx-supervisord.conf /etc/nginx/nginx.conf
+COPY nginx-supervisord.conf.template /etc/nginx/nginx.conf.template
 
 # Build-time cache warmup (production)
 ENV APP_ENV=prod \
