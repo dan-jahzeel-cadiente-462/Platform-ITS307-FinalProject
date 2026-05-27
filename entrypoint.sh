@@ -85,6 +85,8 @@ chmod 755 /var/www/bin/console
 
 echo "[entrypoint] ✅ Application ready!"
 echo "[entrypoint] Starting supervisord to manage nginx and php-fpm..."
+echo "[entrypoint] Nginx will listen on 0.0.0.0:80"
+echo "[entrypoint] PHP-FPM will listen on 127.0.0.1:9000"
 
 # Start supervisord (or fallback to direct execution if supervisord not available)
 exec "$@"
