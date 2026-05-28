@@ -108,12 +108,10 @@ php bin/console cache:warmup --no-interaction --env=prod || {
 }
 
 echo "[entrypoint] Applying final ownership and permissions..."
-chown -R www-data:www-data /var/www || true
-chown -R www-data:www-data /var/log/nginx || true
-find /var/www -type d -exec chmod 755 {} + || true
-find /var/www -type f -exec chmod 644 {} + || true
-chmod 755 /var/www/bin/console || true
+# Optimize: Only fix what is strictly necessary to avoid timeouts during startup
+chown -R www-data:www-data /var/www/var /var/log/nginx || true
 chmod -R 775 /var/www/var || true
+chmod 755 /var/www/bin/console || true
 
 echo "[entrypoint] ✅ Application ready — starting supervisord"
 echo "[entrypoint] Nginx will listen on port $PORT"
