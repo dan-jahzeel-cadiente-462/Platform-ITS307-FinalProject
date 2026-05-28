@@ -108,9 +108,9 @@ php bin/console cache:warmup --no-interaction --env=prod || {
 }
 
 echo "[entrypoint] Applying final ownership and permissions..."
-# Optimized for speed to prevent Railway startup timeouts
-chown -R www-data:www-data var/cache var/log /var/log/nginx || true
-chmod -R 777 var/cache var/log || true
+# Ensure the entire var directory is writeable for cache, logs, and sessions
+chown -R www-data:www-data var /var/log/nginx || true
+chmod -R 775 var || true
 chmod 755 /var/www/bin/console || true
 
 echo "[entrypoint] ✅ Application ready — starting supervisord"
