@@ -1,0 +1,24 @@
+# Auto detect text files and normalize line endings to LF
+* text=auto
+
+# Shell scripts should always use LF
+*.sh text eol=lf
+entrypoint.sh text eol=lf
+
+# Batch files should use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# PHP files use LF
+*.php text eol=lf
+
+# YAML files use LF
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# Config files use LF
+Dockerfile text eol=lf
+.dockerignore text eol=lf
+Procfile text eol=lf
+supervisord.conf text eol=lf
+nginx*.conf* text eol=lf

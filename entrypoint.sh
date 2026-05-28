@@ -64,8 +64,15 @@ fi
 
 # Render nginx config from template so it binds to $PORT (Railway sets PORT)
 if [ -f /etc/nginx/nginx.conf.template ]; then
-  echo "[entrypoint] Rendering /etc/nginx/nginx.conf from template (PORT=${PORT:-80})"
-  envsubst '$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf || true
+  # Ensure PORT has a default value so envsubst can substitute it
+  PORT="${PORT:-80}"
+  export PORT
+  echo "[entrypoint] Rendering /etc/nginx/nginx.conf from template (PORT=$PORT)"
+  envsubst '$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf || {
+    echo "[entrypoint] ❌ CRITICAL: Failed to render nginx config! Aborting startup."
+    exit 1
+  }
+  echo "[entrypoint] ✅ Nginx config rendered successfully"
 fi
 
 echo "[entrypoint] ✅ Application ready — starting supervisord"

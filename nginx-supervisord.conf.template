@@ -35,7 +35,7 @@ http {
     server_tokens off;
 
     server {
-        listen ${PORT:-80};
+        listen $PORT;
         server_name _;
 
         root /var/www/public;
