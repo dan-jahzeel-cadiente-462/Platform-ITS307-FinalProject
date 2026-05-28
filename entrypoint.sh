@@ -57,7 +57,7 @@ if [ "${RUN_MIGRATIONS:-1}" = "1" ]; then
     ATTEMPT=0
 
     while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-      if timeout 2 bash -c "echo > /dev/tcp/$DB_HOST/$DB_PORT" 2>/dev/null; then
+      if nc -z -w 2 "$DB_HOST" "$DB_PORT" 2>/dev/null; then
         echo "[entrypoint] ✅ Database is ready!"
         DB_READY=1
         break
@@ -108,9 +108,9 @@ php bin/console cache:warmup --no-interaction --env=prod || {
 }
 
 echo "[entrypoint] Applying final ownership and permissions..."
-# Optimize: Only fix what is strictly necessary to avoid timeouts during startup
-chown -R www-data:www-data /var/www/var /var/log/nginx || true
-chmod -R 775 /var/www/var || true
+# Optimized for speed to prevent Railway startup timeouts
+chown -R www-data:www-data var/cache var/log /var/log/nginx || true
+chmod -R 777 var/cache var/log || true
 chmod 755 /var/www/bin/console || true
 
 echo "[entrypoint] ✅ Application ready — starting supervisord"

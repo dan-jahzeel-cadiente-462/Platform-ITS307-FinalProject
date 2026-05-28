@@ -42,29 +42,20 @@ RUN chmod +x /var/www/entrypoint.sh
 RUN mkdir -p var/cache var/log \
     && chown -R www-data:www-data var
 
-# Create nginx log directory and set permissions for www-data
-RUN mkdir -p /var/log/nginx && chown -R www-data:www-data /var/log/nginx
+# Create nginx log directory and ensure correct ownership
+RUN mkdir -p /var/log/nginx && chown -R www-data:www-data /var/log/nginx /var/lib/nginx
 
-# Modify PHP-FPM configuration to listen on TCP and run as www-data
+# Modify PHP-FPM configuration to listen on local TCP port
 RUN sed -i 's/^listen = .*/listen = 127.0.0.1:9000/' /usr/local/etc/php-fpm.d/www.conf && \
     sed -i 's/^user = .*/user = www-data/' /usr/local/etc/php-fpm.d/www.conf && \
     sed -i 's/^group = .*/group = www-data/' /usr/local/etc/php-fpm.d/www.conf
 
-# Copy supervisor config and nginx template
+# Copy configurations
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY nginx-supervisord.conf.template /etc/nginx/nginx.conf.template
 
-# Build-time cache warmup (production)
-ENV APP_ENV=prod \
-    APP_DEBUG=0 \
-    PORT=80
-
-RUN php bin/console cache:clear --no-interaction --env=prod || true \
-    && php bin/console cache:warmup --no-interaction --env=prod || true
-
-# Health check: verify nginx is responding
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD curl -f http://127.0.0.1:${PORT:-80} || exit 1
+# Set production environment defaults
+ENV APP_ENV=prod APP_DEBUG=0 PORT=80
 
 # Run supervisord to manage both nginx and php-fpm processes
 EXPOSE 80
