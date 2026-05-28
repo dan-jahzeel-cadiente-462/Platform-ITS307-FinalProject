@@ -4,7 +4,7 @@
     "builder": "dockerfile"
   },
   "deploy": {
-    "startCommand": "/var/www/entrypoint.sh supervisord -c /etc/supervisor/conf.d/supervisord.conf",
+    "startCommand": "supervisord -c /etc/supervisor/conf.d/supervisord.conf",
     "restartPolicyMaxRetries": 5,
     "restartPolicyWindowSeconds": 600
   }

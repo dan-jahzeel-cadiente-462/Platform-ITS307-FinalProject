@@ -12,6 +12,7 @@ RUN apk add --no-cache \
     nginx \
     supervisor \
     gettext \
+    curl \
     && docker-php-ext-install pdo pdo_mysql opcache
 
 # Install Composer
@@ -44,8 +45,10 @@ RUN mkdir -p var/cache var/log \
 # Create nginx log directory and set permissions
 RUN mkdir -p /var/log/nginx && chown -R nginx:nginx /var/log/nginx
 
-# Modify PHP-FPM default config to listen on TCP port 9000
-RUN sed -i 's/^listen = .*/listen = 127.0.0.1:9000/' /usr/local/etc/php-fpm.d/www.conf
+# Modify PHP-FPM default config to listen on TCP port 9000 and run as www-data
+RUN sed -i 's/^listen = .*/listen = 127.0.0.1:9000/' /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i 's/^user = .*/user = www-data/' /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i 's/^group = .*/group = www-data/' /usr/local/etc/php-fpm.d/www.conf
 
 # Copy supervisor config and nginx template
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
@@ -58,6 +61,10 @@ ENV APP_ENV=prod \
 
 RUN php bin/console cache:clear --no-interaction --env=prod || true \
     && php bin/console cache:warmup --no-interaction --env=prod || true
+
+# Health check: verify nginx is responding
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://127.0.0.1:80 || exit 1
 
 # Run supervisord to manage both nginx and php-fpm processes
 EXPOSE 80
