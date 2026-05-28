@@ -42,7 +42,7 @@ RUN chmod +x /var/www/entrypoint.sh
 RUN mkdir -p var/cache var/log \
     && chown -R www-data:www-data var
 
-# Create nginx log directory and set permissions for the user Nginx actually runs as
+# Create nginx log directory and set permissions for www-data
 RUN mkdir -p /var/log/nginx && chown -R www-data:www-data /var/log/nginx
 
 # Modify PHP-FPM configuration to listen on TCP and run as www-data
