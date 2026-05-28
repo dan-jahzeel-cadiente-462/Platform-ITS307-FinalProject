@@ -42,15 +42,13 @@ RUN chmod +x /var/www/entrypoint.sh
 RUN mkdir -p var/cache var/log \
     && chown -R www-data:www-data var
 
-# Create nginx log directory and set permissions
-RUN mkdir -p /var/log/nginx && chown -R nginx:nginx /var/log/nginx
+# Create nginx log directory and set permissions for www-data
+RUN mkdir -p /var/log/nginx && chown -R www-data:www-data /var/log/nginx
 
-# Modify PHP-FPM configuration to listen on TCP, run as www-data, and log to stderr
+# Modify PHP-FPM configuration to listen on TCP and run as www-data
 RUN sed -i 's/^listen = .*/listen = 127.0.0.1:9000/' /usr/local/etc/php-fpm.d/www.conf && \
     sed -i 's/^user = .*/user = www-data/' /usr/local/etc/php-fpm.d/www.conf && \
-    sed -i 's/^group = .*/group = www-data/' /usr/local/etc/php-fpm.d/www.conf && \
-    sed -i 's|^error_log = .*|error_log = /dev/stderr|' /usr/local/etc/php-fpm.d/www.conf && \
-    sed -i 's|^error_log = .*|error_log = /dev/stderr|' /usr/local/etc/php-fpm.conf
+    sed -i 's/^group = .*/group = www-data/' /usr/local/etc/php-fpm.d/www.conf
 
 # Copy supervisor config and nginx template
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
@@ -66,7 +64,7 @@ RUN php bin/console cache:clear --no-interaction --env=prod || true \
 
 # Health check: verify nginx is responding
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD curl -f http://127.0.0.1:80 || exit 1
+    CMD curl -f http://127.0.0.1:${PORT:-80} || exit 1
 
 # Run supervisord to manage both nginx and php-fpm processes
 EXPOSE 80

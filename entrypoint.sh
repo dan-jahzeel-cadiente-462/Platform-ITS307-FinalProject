@@ -37,8 +37,8 @@ if [ "${RUN_MIGRATIONS:-1}" = "1" ]; then
     # Extract host and port using sed
     if echo "$DATABASE_URL" | grep -q '@'; then
       DB_HOST=$(echo "$DATABASE_URL" | sed 's|.*@\([^:/]*\).*|\1|')
-      DB_PORT=$(echo "$DATABASE_URL" | sed 's|.*:\([0-9]*\)/.*|\1|')
-      DB_PORT="${DB_PORT:-3306}"
+      # Extract port if present, otherwise default to 3306
+      DB_PORT=$(echo "$DATABASE_URL" | grep -oE ':[0-9]+/' | tr -d ':/' || echo "3306")
       if [ -n "$DB_HOST" ]; then
         echo "[entrypoint] ✅ DATABASE_URL parsed — Host: $DB_HOST, Port: $DB_PORT"
       else
@@ -109,6 +109,7 @@ php bin/console cache:warmup --no-interaction --env=prod || {
 
 echo "[entrypoint] Applying final ownership and permissions..."
 chown -R www-data:www-data /var/www || true
+chown -R www-data:www-data /var/log/nginx || true
 find /var/www -type d -exec chmod 755 {} + || true
 find /var/www -type f -exec chmod 644 {} + || true
 chmod 755 /var/www/bin/console || true
@@ -120,4 +121,3 @@ echo "[entrypoint] PHP-FPM listening on 127.0.0.1:9000"
 echo "[entrypoint] ============================================"
 
 exec "$@"
-
