@@ -4,7 +4,10 @@ set -eu
 # Ensure we're in the app root
 cd /var/www
 
+echo "[entrypoint] ========================================"
+echo "[entrypoint] Symfony Application Startup"
 echo "[entrypoint] APP_ENV=${APP_ENV:-prod}"
+echo "[entrypoint] ========================================"
 
 # Fix permissions for var directory (important when mounted as volume)
 echo "[entrypoint] Fixing permissions for var directory..."

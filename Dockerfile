@@ -45,10 +45,12 @@ RUN mkdir -p var/cache var/log \
 # Create nginx log directory and set permissions
 RUN mkdir -p /var/log/nginx && chown -R nginx:nginx /var/log/nginx
 
-# Modify PHP-FPM default config to listen on TCP port 9000 and run as www-data
+# Modify PHP-FPM configuration to listen on TCP, run as www-data, and log to stderr
 RUN sed -i 's/^listen = .*/listen = 127.0.0.1:9000/' /usr/local/etc/php-fpm.d/www.conf && \
     sed -i 's/^user = .*/user = www-data/' /usr/local/etc/php-fpm.d/www.conf && \
-    sed -i 's/^group = .*/group = www-data/' /usr/local/etc/php-fpm.d/www.conf
+    sed -i 's/^group = .*/group = www-data/' /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i 's|^error_log = .*|error_log = /dev/stderr|' /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i 's|^error_log = .*|error_log = /dev/stderr|' /usr/local/etc/php-fpm.conf
 
 # Copy supervisor config and nginx template
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
@@ -71,4 +73,3 @@ EXPOSE 80
 
 ENTRYPOINT ["/var/www/entrypoint.sh"]
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
-
