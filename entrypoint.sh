@@ -107,15 +107,10 @@ php bin/console cache:warmup --no-interaction --env=prod || {
   echo "[entrypoint] ⚠️  Cache warmup failed (non-critical), continuing..."
 }
 
-echo "[entrypoint] Applying final ownership and permissions..."
-# Ensure the entire var directory is writeable for cache, logs, and sessions
-chown -R www-data:www-data var /var/log/nginx || true
-chmod -R 775 var || true
+echo "[entrypoint] Applying targeted ownership and permissions..."
+# Fast permissions: only touch what Symfony needs to write to
+chown -R www-data:www-data var /var/log/nginx /var/lib/nginx || true
+chmod -R 777 var || true
 chmod 755 /var/www/bin/console || true
-
-echo "[entrypoint] ✅ Application ready — starting supervisord"
-echo "[entrypoint] Nginx will listen on port $PORT"
-echo "[entrypoint] PHP-FPM listening on 127.0.0.1:9000"
-echo "[entrypoint] ============================================"
 
 exec "$@"
